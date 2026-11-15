@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 019-fix-demo-user-passwords
+      author: codex
+      comment: Replace the malformed BCrypt hashes used by the demo accounts.
+      changes:
+        - update:
+            tableName: users
+            columns:
+              - column:
+                  name: password
+                  value: "$2b$10$iEvmX0qZdCXYtfOOStaWJ.x8/uWrsP9IZMd0vuCsjmUV1KXtR5.fm"
+            where: "email IN ('customer@example.com', 'admin@example.com')"

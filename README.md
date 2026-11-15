@@ -137,6 +137,12 @@ Use the returned token for protected endpoints:
 Authorization: Bearer <token>
 ```
 
+The local/demo database also contains these accounts (both use password
+`password123`):
+
+- `customer@example.com` (`CUSTOMER`)
+- `admin@example.com` (`ADMIN`)
+
 ## Swagger / OpenAPI
 
 With the application running, open:

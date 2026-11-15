@@ -28,3 +28,6 @@ databaseChangeLog:
 
   - include:
       file: db/changelog/seed/002-seed-demo-data.yaml
+
+  - include:
+      file: db/changelog/seed/004-fix-demo-auth.yaml
