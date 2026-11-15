@@ -14,11 +14,18 @@ import java.util.List;
 public class CorsConfig {
 
     private final List<String> allowedOrigins;
+    private final List<String> allowedOriginPatterns;
 
     public CorsConfig(
-            @Value("${app.cors.allowed-origins}") String allowedOrigins
+            @Value("${app.cors.allowed-origins}") String allowedOrigins,
+            @Value("${app.cors.allowed-origin-patterns:}") String allowedOriginPatterns
     ) {
-        this.allowedOrigins = Arrays.stream(allowedOrigins.split(","))
+        this.allowedOrigins = splitValues(allowedOrigins);
+        this.allowedOriginPatterns = splitValues(allowedOriginPatterns);
+    }
+
+    private static List<String> splitValues(String values) {
+        return Arrays.stream(values.split(","))
                 .map(String::trim)
                 .filter(origin -> !origin.isBlank())
                 .toList();
@@ -29,6 +36,7 @@ public class CorsConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(allowedOrigins);
+        configuration.setAllowedOriginPatterns(allowedOriginPatterns);
 
         configuration.setAllowedMethods(
                 List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
