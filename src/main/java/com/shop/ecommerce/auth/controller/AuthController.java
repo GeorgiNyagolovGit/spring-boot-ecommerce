@@ -1,6 +1,8 @@
 package com.shop.ecommerce.auth.controller;
 
 import com.shop.ecommerce.auth.dto.AuthResponse;
+import com.shop.ecommerce.auth.dto.GoogleAuthConfigResponse;
+import com.shop.ecommerce.auth.dto.GoogleLoginRequest;
 import com.shop.ecommerce.auth.dto.LoginRequest;
 import com.shop.ecommerce.auth.dto.RegisterRequest;
 import com.shop.ecommerce.auth.service.AuthService;
@@ -10,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,9 +21,25 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final String googleClientId;
 
-    public AuthController(AuthService authService) {
+    public AuthController(
+            AuthService authService,
+            @Value("${google.auth.client-id:}") String googleClientId
+    ) {
         this.authService = authService;
+        this.googleClientId = googleClientId == null
+                ? ""
+                : googleClientId.trim();
+    }
+
+    @GetMapping("/google/config")
+    @Operation(summary = "Get the public Google Sign-In configuration")
+    public GoogleAuthConfigResponse googleAuthConfig() {
+        return new GoogleAuthConfigResponse(
+                googleClientId,
+                !googleClientId.isBlank()
+        );
     }
 
     @PostMapping("/register")
@@ -46,5 +65,18 @@ public class AuthController {
             @Valid @RequestBody LoginRequest request
     ) {
         return authService.login(request);
+    }
+
+    @PostMapping("/google")
+    @Operation(summary = "Sign in with a Google ID token")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Google sign-in successful"),
+            @ApiResponse(responseCode = "401", description = "Invalid Google credential"),
+            @ApiResponse(responseCode = "503", description = "Google authentication unavailable")
+    })
+    public AuthResponse googleLogin(
+            @Valid @RequestBody GoogleLoginRequest request
+    ) {
+        return authService.googleLogin(request);
     }
 }

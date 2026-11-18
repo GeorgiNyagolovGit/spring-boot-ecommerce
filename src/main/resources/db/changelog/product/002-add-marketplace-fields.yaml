@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 021-add-marketplace-listing-fields
+      author: codex
+      changes:
+        - addColumn:
+            tableName: products
+            columns:
+              - column:
+                  name: owner_id
+                  type: BIGINT
+              - column:
+                  name: location
+                  type: VARCHAR(120)
+              - column:
+                  name: item_condition
+                  type: VARCHAR(30)
+              - column:
+                  name: contact_phone
+                  type: VARCHAR(30)
+        - addForeignKeyConstraint:
+            baseTableName: products
+            baseColumnNames: owner_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_products_owner
+        - createIndex:
+            tableName: products
+            indexName: idx_products_owner_id
+            columns:
+              - column:
+                  name: owner_id
+        - update:
+            tableName: products
+            columns:
+              - column:
+                  name: owner_id
+                  valueComputed: "(SELECT id FROM users WHERE email = 'customer@example.com')"
+              - column:
+                  name: location
+                  value: Sofia
+              - column:
+                  name: item_condition
+                  value: GOOD
+              - column:
+                  name: contact_phone
+                  value: "+359 888 000 000"
+            where: "owner_id IS NULL"

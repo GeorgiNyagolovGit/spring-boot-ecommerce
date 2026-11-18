@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Обяви от хора близо до теб">
+    <title>Намери.бг — обяви от хората</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" href="#" aria-label="Начало">
+        <span class="brand-mark" aria-hidden="true">Н</span>
+        <span>намери<span class="brand-dot">.</span>бг</span>
+    </a>
+    <nav class="header-actions" aria-label="Основна навигация">
+        <button class="nav-button" id="allListingsButton" type="button">Всички обяви</button>
+        <button class="nav-button hidden" id="myListingsButton" type="button">Моите обяви</button>
+        <button class="nav-button messages-button hidden" id="messagesButton" type="button">
+            Съобщения <span class="unread-badge hidden" id="unreadBadge">0</span>
+        </button>
+        <button class="nav-button" id="authButton" type="button">Вход</button>
+        <button class="publish-button" id="publishButton" type="button">
+            <span aria-hidden="true">＋</span> Публикувай
+        </button>
+    </nav>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="hero-copy">
+            <p class="eyebrow">Купувай. Продавай. Преоткривай.</p>
+            <h1>Хубавите неща заслужават <em>втори живот.</em></h1>
+            <p>Разгледай обяви от хора близо до теб или публикувай своята за минута.</p>
+        </div>
+        <form class="search-panel" id="searchForm">
+            <label class="search-field">
+                <span>Какво търсиш?</span>
+                <input id="searchInput" type="search" placeholder="телефон, колело, книга...">
+            </label>
+            <label class="search-field category-field">
+                <span>Категория</span>
+                <select id="categorySelect">
+                    <option value="">Всички категории</option>
+                </select>
+            </label>
+            <button class="search-button" type="submit">Търси</button>
+        </form>
+    </section>
+
+    <section class="category-strip" aria-label="Популярни категории">
+        <button type="button" data-category="" class="category-chip active">Всички</button>
+        <div id="categoryChips"></div>
+    </section>
+
+    <section class="catalog" aria-labelledby="catalogTitle">
+        <div class="section-heading">
+            <div>
+                <p class="section-kicker" id="catalogKicker">Нови предложения</p>
+                <h2 id="catalogTitle">Последни обяви</h2>
+            </div>
+            <p id="listingCount" class="listing-count"></p>
+        </div>
+        <div id="listingGrid" class="listing-grid" aria-live="polite"></div>
+        <div id="emptyState" class="empty-state hidden">
+            <span aria-hidden="true">⌕</span>
+            <h3>Няма намерени обяви</h3>
+            <p>Промени търсенето или разгледай всички категории.</p>
+        </div>
+    </section>
+
+    <section class="trust-band">
+        <div><strong>Лесно</strong><span>Публикуваш обява за минута</span></div>
+        <div><strong>Директно</strong><span>Свързваш се със самия продавач</span></div>
+        <div><strong>Без такси</strong><span>Няма плащания през платформата</span></div>
+    </section>
+</main>
+
+<footer>
+    <a class="brand footer-brand" href="#"><span class="brand-mark">Н</span> намери.бг</a>
+    <p>Място за добри сделки между хора.</p>
+    <a href="/docs">API документация</a>
+</footer>
+
+<dialog id="authDialog" class="modal auth-modal">
+    <button class="modal-close" type="button" data-close="authDialog" aria-label="Затвори">×</button>
+    <div id="loggedOutPanel">
+        <p class="modal-kicker">Добре дошъл</p>
+        <h2 id="authTitle">Влез в профила си</h2>
+        <div class="auth-tabs" role="tablist">
+            <button class="active" id="loginTab" type="button">Вход</button>
+            <button id="registerTab" type="button">Регистрация</button>
+        </div>
+        <form id="authForm" class="stacked-form">
+            <div id="nameFields" class="two-columns hidden">
+                <label>Име<input name="firstName" autocomplete="given-name"></label>
+                <label>Фамилия<input name="lastName" autocomplete="family-name"></label>
+            </div>
+            <label>Имейл<input name="email" type="email" required autocomplete="email"></label>
+            <label>Парола<input name="password" type="password" minlength="8" required autocomplete="current-password"></label>
+            <p class="form-error hidden" id="authError"></p>
+            <button class="primary-button" id="authSubmit" type="submit">Вход</button>
+        </form>
+        <p class="demo-hint">Демо: customer@example.com / password123</p>
+    </div>
+    <div id="accountPanel" class="account-panel hidden">
+        <div class="account-avatar" id="accountAvatar">Н</div>
+        <h2 id="accountName"></h2>
+        <p id="accountEmail"></p>
+        <button class="secondary-button" id="openMyListings" type="button">Моите обяви</button>
+        <button class="secondary-button" id="openMessagesFromAccount" type="button">Съобщения</button>
+        <button class="text-button danger" id="logoutButton" type="button">Изход</button>
+    </div>
+</dialog>
+
+<dialog id="listingFormDialog" class="modal wide-modal">
+    <button class="modal-close" type="button" data-close="listingFormDialog" aria-label="Затвори">×</button>
+    <p class="modal-kicker">Твоята обява</p>
+    <h2 id="listingFormTitle">Публикувай нещо хубаво</h2>
+    <form id="listingForm" class="stacked-form listing-form">
+        <input type="hidden" name="listingId">
+        <label class="full-width">Заглавие<input name="name" maxlength="150" required placeholder="Напр. Градски велосипед Trek"></label>
+        <label class="full-width">Описание<textarea name="description" maxlength="2000" rows="5" required placeholder="Състояние, особености, какво е включено..."></textarea></label>
+        <label>Цена (лв.)<input name="price" type="number" min="0" step="0.01" required></label>
+        <label>Категория<select name="categoryId" id="formCategory" required><option value="">Избери</option></select></label>
+        <label>Състояние
+            <select name="condition" required>
+                <option value="">Избери</option>
+                <option value="NEW">Ново</option>
+                <option value="LIKE_NEW">Като ново</option>
+                <option value="GOOD">Добро</option>
+                <option value="FAIR">Задоволително</option>
+                <option value="FOR_PARTS">За части</option>
+            </select>
+        </label>
+        <label>Населено място<input name="location" maxlength="120" required placeholder="София"></label>
+        <label>Телефон<input name="contactPhone" maxlength="30" required placeholder="+359 888 123 456"></label>
+        <label>Снимка (URL)<input name="imageUrl" type="url" maxlength="500" placeholder="https://..."></label>
+        <p class="form-error hidden full-width" id="listingFormError"></p>
+        <button class="primary-button full-width" type="submit">Запази обявата</button>
+    </form>
+</dialog>
+
+<dialog id="detailDialog" class="modal detail-modal">
+    <button class="modal-close" type="button" data-close="detailDialog" aria-label="Затвори">×</button>
+    <div id="detailContent"></div>
+</dialog>
+
+<dialog id="newMessageDialog" class="modal message-compose-modal">
+    <button class="modal-close" type="button" data-close="newMessageDialog" aria-label="Затвори">×</button>
+    <p class="modal-kicker">Запитване за обява</p>
+    <h2>Пиши на продавача</h2>
+    <div class="message-listing-context" id="messageListingContext"></div>
+    <form id="newMessageForm" class="stacked-form">
+        <input type="hidden" name="listingId">
+        <label>Съобщение
+            <textarea name="message" maxlength="2000" rows="5" required placeholder="Здравейте, обявата още ли е актуална?"></textarea>
+        </label>
+        <p class="form-error hidden" id="newMessageError"></p>
+        <button class="primary-button" type="submit">Изпрати</button>
+    </form>
+</dialog>
+
+<dialog id="messagesDialog" class="modal messages-modal">
+    <button class="modal-close" type="button" data-close="messagesDialog" aria-label="Затвори">×</button>
+    <div class="messages-layout">
+        <aside class="conversation-panel">
+            <div class="messages-title">
+                <p class="modal-kicker">Твоят inbox</p>
+                <h2>Съобщения</h2>
+            </div>
+            <div id="conversationList" class="conversation-list"></div>
+            <div id="conversationEmpty" class="conversation-empty hidden">
+                Още нямаш разговори.
+            </div>
+        </aside>
+        <section class="thread-panel">
+            <div id="threadPlaceholder" class="thread-placeholder">
+                <span aria-hidden="true">✉</span>
+                <h3>Избери разговор</h3>
+                <p>Съобщенията за обявата ще се покажат тук.</p>
+            </div>
+            <div id="activeThread" class="active-thread hidden">
+                <header class="thread-header" id="threadHeader"></header>
+                <div class="message-thread" id="messageThread" aria-live="polite"></div>
+                <form id="replyForm" class="reply-form">
+                    <textarea name="body" maxlength="2000" rows="2" required placeholder="Напиши съобщение..."></textarea>
+                    <button type="submit" aria-label="Изпрати">➤</button>
+                </form>
+                <p class="form-error hidden" id="replyError"></p>
+            </div>
+        </section>
+    </div>
+</dialog>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="/app.js" defer></script>
+</body>
+</html>

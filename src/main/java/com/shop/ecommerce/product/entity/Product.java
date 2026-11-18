@@ -1,5 +1,6 @@
 package com.shop.ecommerce.product.entity;
 
+import com.shop.ecommerce.auth.entity.User;
 import com.shop.ecommerce.category.entity.Category;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -35,12 +36,26 @@ public class Product {
     @Column(length = 500)
     private String imageUrl;
 
+    @Column(length = 120)
+    private String location;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "item_condition", length = 30)
+    private ProductCondition condition;
+
+    @Column(length = 30)
+    private String contactPhone;
+
     @Column(nullable = false)
     private boolean active = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
+    private User owner;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

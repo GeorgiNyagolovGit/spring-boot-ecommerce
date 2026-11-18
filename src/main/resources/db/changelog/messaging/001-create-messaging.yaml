@@ -1,0 +1,144 @@
+databaseChangeLog:
+  - changeSet:
+      id: 023-create-listing-conversations
+      author: codex
+      changes:
+        - createTable:
+            tableName: conversations
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: listing_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: buyer_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: seller_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueDate: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueDate: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: conversations
+            columnNames: listing_id,buyer_id
+            constraintName: uk_conversation_listing_buyer
+        - addForeignKeyConstraint:
+            baseTableName: conversations
+            baseColumnNames: listing_id
+            referencedTableName: products
+            referencedColumnNames: id
+            constraintName: fk_conversations_listing
+        - addForeignKeyConstraint:
+            baseTableName: conversations
+            baseColumnNames: buyer_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_conversations_buyer
+        - addForeignKeyConstraint:
+            baseTableName: conversations
+            baseColumnNames: seller_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_conversations_seller
+        - createIndex:
+            tableName: conversations
+            indexName: idx_conversations_buyer
+            columns:
+              - column:
+                  name: buyer_id
+        - createIndex:
+            tableName: conversations
+            indexName: idx_conversations_seller
+            columns:
+              - column:
+                  name: seller_id
+
+  - changeSet:
+      id: 024-create-listing-messages
+      author: codex
+      changes:
+        - createTable:
+            tableName: messages
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: conversation_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sender_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: body
+                  type: VARCHAR(2000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: read_at
+                  type: TIMESTAMP
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueDate: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: messages
+            baseColumnNames: conversation_id
+            referencedTableName: conversations
+            referencedColumnNames: id
+            constraintName: fk_messages_conversation
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: messages
+            baseColumnNames: sender_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_messages_sender
+        - createIndex:
+            tableName: messages
+            indexName: idx_messages_conversation_created
+            columns:
+              - column:
+                  name: conversation_id
+              - column:
+                  name: created_at
+        - createIndex:
+            tableName: messages
+            indexName: idx_messages_unread
+            columns:
+              - column:
+                  name: conversation_id
+              - column:
+                  name: read_at

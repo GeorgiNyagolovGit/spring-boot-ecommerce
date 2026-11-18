@@ -6,5 +6,5 @@ spring:
     driver-class-name: org.h2.Driver
 
 jwt:
-  # Development-only key. Production always reads JWT_SECRET from the environment.
-  secret: local-development-jwt-secret-change-me-1234567890
+  # Generate an ephemeral development key; production reads JWT_SECRET from the environment.
+  secret: ${random.value}${random.value}

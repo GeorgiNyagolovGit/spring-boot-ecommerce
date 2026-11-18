@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 020-add-google-subject
+      author: georgi
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: google_subject
+                  type: VARCHAR(255)
+        - addUniqueConstraint:
+            tableName: users
+            columnNames: google_subject
+            constraintName: uk_users_google_subject

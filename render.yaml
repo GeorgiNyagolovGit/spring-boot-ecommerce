@@ -1,45 +1,51 @@
 services:
   - type: web
-    name: ecommerce-backend
+    name: marketplace-backend
     runtime: docker
-    plan: free
     region: frankfurt
+    plan: 0.5c-512mb
+    dockerfilePath: ./Dockerfile
     healthCheckPath: /actuator/health
+    autoDeployTrigger: commit
     envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
       - key: DB_HOST
         fromDatabase:
-          name: ecommerce-db
+          name: marketplace-db
           property: host
       - key: DB_PORT
         fromDatabase:
-          name: ecommerce-db
+          name: marketplace-db
           property: port
       - key: DB_NAME
         fromDatabase:
-          name: ecommerce-db
+          name: marketplace-db
           property: database
       - key: DB_USERNAME
         fromDatabase:
-          name: ecommerce-db
+          name: marketplace-db
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: ecommerce-db
+          name: marketplace-db
           property: password
       - key: JWT_SECRET
         generateValue: true
-      - key: SPRING_PROFILES_ACTIVE
-        value: prod,mock-payment
-      - key: FRONTEND_URL
-        value: https://marketplace-frontend-xi-kohl.vercel.app
+      - key: JWT_EXPIRATION
+        value: "86400000"
       - key: CORS_ALLOWED_ORIGINS
-        value: https://marketplace-frontend-xi-kohl.vercel.app
+        sync: false
       - key: CORS_ALLOWED_ORIGIN_PATTERNS
-        value: https://*.vercel.app
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
 
 databases:
-  - name: ecommerce-db
-    plan: free
+  - name: marketplace-db
     region: frankfurt
-    databaseName: ecommerce
-    user: ecommerce
+    plan: 0.1c-256mb
+    databaseName: javacommerce
+    user: marketplace_user
+    diskSizeGB: 1
+    ipAllowList: []

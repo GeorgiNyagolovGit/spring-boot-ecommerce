@@ -7,6 +7,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -19,8 +20,15 @@ class OpenApiDocumentationTests {
     private MockMvc mockMvc;
 
     @Test
-    void rootRedirectsToSwaggerUi() throws Exception {
+    void rootOpensMarketplaceFrontend() throws Exception {
         mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(forwardedUrl("/index.html"));
+    }
+
+    @Test
+    void docsRedirectsToSwaggerUi() throws Exception {
+        mockMvc.perform(get("/docs"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/swagger-ui/index.html"));
     }
@@ -31,10 +39,10 @@ class OpenApiDocumentationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$['paths']['/api/auth/register']").exists())
                 .andExpect(jsonPath("$['paths']['/api/auth/login']").exists())
-                .andExpect(jsonPath("$['paths']['/api/products']").exists())
+                .andExpect(jsonPath("$['paths']['/api/auth/google']").exists())
+                .andExpect(jsonPath("$['paths']['/api/listings']").exists())
                 .andExpect(jsonPath("$['paths']['/api/categories']").exists())
                 .andExpect(jsonPath("$['paths']['/api/orders']").exists())
-                .andExpect(jsonPath("$['paths']['/api/payments']").exists())
                 .andExpect(jsonPath("$['paths']['/api/cart']").exists())
                 .andExpect(jsonPath(
                         "$['paths']['/api/cart/items']"
@@ -53,9 +61,6 @@ class OpenApiDocumentationTests {
                 ).exists())
                 .andExpect(jsonPath(
                         "$['paths']['/api/admin/orders']"
-                ).exists())
-                .andExpect(jsonPath(
-                        "$['paths']['/api/admin/payments']"
                 ).exists())
                 .andExpect(jsonPath(
                         "$['paths']['/api/admin/users']"

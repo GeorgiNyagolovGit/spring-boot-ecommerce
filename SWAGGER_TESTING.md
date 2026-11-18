@@ -1,108 +1,60 @@
-# Swagger API testing
+# Swagger testing guide
 
-Swagger UI is the main interface for manually exploring and demonstrating this
-API. The automated JUnit, Mockito and MockMvc tests remain the regression safety
-net and should still be run before deployment.
+Open `http://localhost:8080/swagger-ui/index.html` after starting the API.
 
-## Start the application
+## Authenticate
 
-```bash
-./gradlew bootRun
+1. Run `POST /api/auth/login` with `customer@example.com` and
+   `password123`.
+2. Copy the returned `token`.
+3. Select **Authorize**, paste the token and confirm.
+
+Google login can alternatively send the Google Identity Services ID token as
+`credential` to `POST /api/auth/google`.
+
+## Test the marketplace flow
+
+1. Use `GET /api/listings` without authentication to browse ads.
+2. Use `POST /api/listings` with:
+
+```json
+{
+  "name": "Used city bicycle",
+  "description": "Recently serviced and ready to ride",
+  "price": 450,
+  "stock": 1,
+  "imageUrl": "https://example.com/bicycle.jpg",
+  "categoryId": 1,
+  "location": "Sofia",
+  "condition": "GOOD",
+  "contactPhone": "+359 888 123 456"
+}
 ```
 
-Open `http://localhost:8080`. The root address redirects to Swagger UI. The
-direct address is `http://localhost:8080/swagger-ui/index.html`.
+3. Run `GET /api/listings/mine` to see your own ads.
+4. Use `PUT /api/listings/{id}` to edit an owned ad.
+5. Use `DELETE /api/listings/{id}` to deactivate it.
 
-Select **Try it out** on an operation, edit its parameters or JSON body, and
-then select **Execute**. Swagger displays the request, response status, headers
-and body.
+Public search is available at
+`GET /api/listings/search?keyword=sofia`. It searches the title, description
+and location.
 
-## Public catalog
+The API intentionally has no payment or Stripe endpoints.
 
-These operations do not require authentication:
+## Test user messages
 
-1. `GET /api/categories`
-2. `GET /api/products`
-3. `GET /api/products/{id}`
-4. `GET /api/products/search`
+Use two different accounts because a seller cannot message their own listing.
 
-Use an ID returned by the list operations instead of assuming a fixed database
-ID.
+1. Authenticate as the interested buyer.
+2. Run `POST /api/conversations` with the listing ID and first message.
+3. Run `GET /api/conversations` to list the inbox.
+4. Use `GET /api/conversations/{conversationId}/messages` to open the chat.
+5. Reply with `POST /api/conversations/{conversationId}/messages`:
 
-## Customer scenario
-
-1. Run `POST /api/auth/login` with:
-
-   ```json
-   {
-     "email": "customer@example.com",
-     "password": "password123"
-   }
-   ```
-
-2. Copy only the `token` value from the response.
-3. Select **Authorize** at the top of Swagger UI, paste the token without adding
-   the word `Bearer`, and confirm.
-4. Run `GET /api/cart`.
-5. Add a product with `POST /api/cart/items`, using an ID returned by
-   `GET /api/products`:
-
-   ```json
-   {
-     "productId": 1,
-     "quantity": 2
-   }
-   ```
-
-6. Create a pending order with `POST /api/orders`:
-
-   ```json
-   {
-     "shippingAddress": "10 Bulgaria Blvd, Sofia",
-     "items": [
-       {
-         "productId": 1,
-         "quantity": 1
-       }
-     ]
-   }
-   ```
-
-7. Copy the new order ID and create its mock payment with
-   `POST /api/payments`:
-
-   ```json
-   {
-     "orderId": 2
-   }
-   ```
-
-## Administrator scenario
-
-1. Run `POST /api/auth/login` with:
-
-   ```json
-   {
-     "email": "admin@example.com",
-     "password": "password123"
-   }
-   ```
-
-2. Replace the customer token through **Authorize**.
-3. Test the endpoints under the `Admin` sections, starting with
-   `GET /api/admin/dashboard`.
-
-## Expected authorization responses
-
-- `401 Unauthorized`: the token is missing, invalid or expired.
-- `403 Forbidden`: the token is valid, but the account does not have the
-  required role.
-- `400 Bad Request`: the JSON body or business operation is invalid.
-
-## Automated verification
-
-Run the complete regression suite before committing or deploying:
-
-```bash
-./gradlew test
+```json
+{
+  "body": "Мога ли да го видя утре?"
+}
 ```
+
+Only the buyer and the listing owner can read or write in that conversation.

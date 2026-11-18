@@ -4,6 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,16 +22,6 @@ public class GlobalExceptionHandler {
     ) {
         return buildResponse(
                 HttpStatus.NOT_FOUND,
-                exception.getMessage()
-        );
-    }
-
-    @ExceptionHandler(PaymentException.class)
-    public ResponseEntity<Map<String, Object>> handlePayment(
-            PaymentException exception
-    ) {
-        return buildResponse(
-                HttpStatus.BAD_REQUEST,
                 exception.getMessage()
         );
     }
@@ -77,6 +68,33 @@ public class GlobalExceptionHandler {
         return buildResponse(
                 HttpStatus.UNAUTHORIZED,
                 "Invalid email or password"
+        );
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(
+            AccessDeniedException exception
+    ) {
+        return buildResponse(HttpStatus.FORBIDDEN, exception.getMessage());
+    }
+
+    @ExceptionHandler(GoogleAuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleGoogleAuthentication(
+            GoogleAuthenticationException exception
+    ) {
+        return buildResponse(
+                HttpStatus.UNAUTHORIZED,
+                exception.getMessage()
+        );
+    }
+
+    @ExceptionHandler(ExternalAuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleExternalAuthentication(
+            ExternalAuthenticationException exception
+    ) {
+        return buildResponse(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                exception.getMessage()
         );
     }
 

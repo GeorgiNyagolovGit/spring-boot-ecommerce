@@ -18,9 +18,12 @@ import java.util.List;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.http.MediaType;
 
 @ExtendWith(MockitoExtension.class)
 class ProductControllerTest {
@@ -71,6 +74,32 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$[0].name").value("Java Book"));
 
         verify(productService).searchProducts("java");
+    }
+
+    @Test
+    void authenticatedUserCanPublishListing() throws Exception {
+        when(productService.createListing(
+                org.mockito.ArgumentMatchers.eq("seller@example.com"),
+                any()
+        )).thenReturn(product(1L, "Used bicycle"));
+
+        mockMvc.perform(post("/api/listings")
+                        .principal(() -> "seller@example.com")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Used bicycle",
+                                  "description": "Recently serviced",
+                                  "price": 450,
+                                  "stock": 1,
+                                  "categoryId": 1,
+                                  "location": "Sofia",
+                                  "condition": "GOOD",
+                                  "contactPhone": "+359 888 123 456"
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Used bicycle"));
     }
 
     private ProductDto product(Long id, String name) {

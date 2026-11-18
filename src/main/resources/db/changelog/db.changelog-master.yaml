@@ -6,6 +6,9 @@ databaseChangeLog:
       file: db/changelog/auth/002-seed-roles.yaml
 
   - include:
+      file: db/changelog/auth/003-add-google-subject.yaml
+
+  - include:
       file: db/changelog/category/001-create-category.yaml
 
   - include:
@@ -31,3 +34,15 @@ databaseChangeLog:
 
   - include:
       file: db/changelog/seed/004-fix-demo-auth.yaml
+
+  - include:
+      file: db/changelog/product/002-add-marketplace-fields.yaml
+
+  - include:
+      file: db/changelog/product/003-add-listing-search-indexes.yaml
+
+  - include:
+      file: db/changelog/messaging/001-create-messaging.yaml
+
+  - include:
+      file: db/changelog/payment/002-remove-payments.yaml

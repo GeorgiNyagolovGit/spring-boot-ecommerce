@@ -17,6 +17,6 @@ RUN useradd --system --uid 1001 appuser
 COPY --from=builder /app/build/libs/*.jar app.jar
 
 USER appuser
-EXPOSE 10000
+EXPOSE 8080
 
 ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-jar", "/app/app.jar"]

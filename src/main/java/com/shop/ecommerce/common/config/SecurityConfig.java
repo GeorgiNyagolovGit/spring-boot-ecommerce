@@ -42,6 +42,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/",
+                                "/index.html",
+                                "/styles.css",
+                                "/app.js",
+                                "/favicon.ico",
+                                "/docs",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
@@ -50,17 +55,23 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(
+                                "/api/listings/mine",
+                                "/api/products/mine"
+                        ).authenticated()
+                        .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/categories",
                                 "/api/categories/**",
+                                "/api/listings",
+                                "/api/listings/**",
                                 "/api/products",
                                 "/api/products/**"
                         ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/conversations/**").authenticated()
                         .requestMatchers(
                                 "/api/cart/**",
-                                "/api/orders/**",
-                                "/api/payments/**"
+                                "/api/orders/**"
                         ).authenticated()
                         .anyRequest().authenticated()
                 )

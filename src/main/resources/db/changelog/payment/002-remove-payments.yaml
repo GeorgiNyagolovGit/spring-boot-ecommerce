@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 022-remove-payments
+      author: codex
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: payments
+      changes:
+        - dropTable:
+            tableName: payments
+            cascadeConstraints: true

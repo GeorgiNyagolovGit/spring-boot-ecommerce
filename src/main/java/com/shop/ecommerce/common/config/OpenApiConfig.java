@@ -13,14 +13,15 @@ public class OpenApiConfig {
     public static final String BEARER_AUTH = "bearerAuth";
 
     @Bean
-    public OpenAPI ecommerceOpenApi() {
+    public OpenAPI marketplaceOpenApi() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("E-Commerce API")
+                        .title("Marketplace Listings API")
                         .description(
                                 """
-                                REST API for authentication, catalog, carts,
-                                orders and mock payments.
+                                REST API for authentication, public listings,
+                                seller-owned ads, listing conversations,
+                                categories and orders.
 
                                 ### Quick test flow
                                 1. Run `POST /api/auth/login` with one of the
@@ -28,8 +29,9 @@ public class OpenApiConfig {
                                 2. Copy only the returned `token` value.
                                 3. Select **Authorize**, paste the token and
                                    confirm.
-                                4. Test the protected cart, order, payment or
-                                   admin endpoints.
+                                4. Publish an ad with `POST /api/listings` or
+                                   message its seller through
+                                   `POST /api/conversations`.
 
                                 Demo customer: `customer@example.com` /
                                 `password123`

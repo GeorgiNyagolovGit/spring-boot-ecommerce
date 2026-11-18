@@ -7,6 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class ApiEntryController {
 
     @GetMapping("/")
+    public String openMarketplace() {
+        return "forward:/index.html";
+    }
+
+    @GetMapping("/docs")
     public String openSwaggerUi() {
         return "redirect:/swagger-ui/index.html";
     }

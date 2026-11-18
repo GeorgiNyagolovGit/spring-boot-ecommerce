@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 023-add-listing-search-indexes
+      author: codex
+      changes:
+        - createIndex:
+            tableName: products
+            indexName: idx_products_active_created_at
+            columns:
+              - column:
+                  name: active
+              - column:
+                  name: created_at
+        - createIndex:
+            tableName: products
+            indexName: idx_products_location
+            columns:
+              - column:
+                  name: location
