@@ -78,26 +78,6 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.FORBIDDEN, exception.getMessage());
     }
 
-    @ExceptionHandler(GoogleAuthenticationException.class)
-    public ResponseEntity<Map<String, Object>> handleGoogleAuthentication(
-            GoogleAuthenticationException exception
-    ) {
-        return buildResponse(
-                HttpStatus.UNAUTHORIZED,
-                exception.getMessage()
-        );
-    }
-
-    @ExceptionHandler(ExternalAuthenticationException.class)
-    public ResponseEntity<Map<String, Object>> handleExternalAuthentication(
-            ExternalAuthenticationException exception
-    ) {
-        return buildResponse(
-                HttpStatus.SERVICE_UNAVAILABLE,
-                exception.getMessage()
-        );
-    }
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneral(
             Exception exception

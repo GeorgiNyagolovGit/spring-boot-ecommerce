@@ -3,7 +3,6 @@ package com.shop.ecommerce.auth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shop.ecommerce.auth.controller.AuthController;
 import com.shop.ecommerce.auth.dto.AuthResponse;
-import com.shop.ecommerce.auth.dto.GoogleLoginRequest;
 import com.shop.ecommerce.auth.dto.LoginRequest;
 import com.shop.ecommerce.auth.dto.RegisterRequest;
 import com.shop.ecommerce.auth.service.AuthService;
@@ -21,7 +20,6 @@ import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,10 +36,7 @@ class AuthControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders
-                .standaloneSetup(new AuthController(
-                        authService,
-                        "test-client-id.apps.googleusercontent.com"
-                ))
+                .standaloneSetup(new AuthController(authService))
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
         objectMapper = new ObjectMapper();
@@ -133,44 +128,6 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("jwt-token"));
-    }
-
-    @Test
-    void googleLoginReturnsApplicationJwt() throws Exception {
-        when(authService.googleLogin(any(GoogleLoginRequest.class)))
-                .thenReturn(new AuthResponse(
-                        1L,
-                        "Ivan",
-                        "Ivanov",
-                        "ivan@gmail.com",
-                        "application-jwt",
-                        Set.of("ROLE_CUSTOMER")
-                ));
-
-        mockMvc.perform(post("/api/auth/google")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"credential\":\"google-id-token\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("ivan@gmail.com"))
-                .andExpect(jsonPath("$.token").value("application-jwt"));
-    }
-
-    @Test
-    void googleConfigReturnsPublicClientId() throws Exception {
-        mockMvc.perform(get("/api/auth/google/config"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.clientId").value(
-                        "test-client-id.apps.googleusercontent.com"
-                ))
-                .andExpect(jsonPath("$.enabled").value(true));
-    }
-
-    @Test
-    void googleLoginRejectsBlankCredential() throws Exception {
-        mockMvc.perform(post("/api/auth/google")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"credential\":\"\"}"))
-                .andExpect(status().isBadRequest());
     }
 
     private RegisterRequest registrationRequest(

@@ -36,6 +36,9 @@ databaseChangeLog:
       file: db/changelog/seed/004-fix-demo-auth.yaml
 
   - include:
+      file: db/changelog/seed/005-ensure-demo-users.yaml
+
+  - include:
       file: db/changelog/product/002-add-marketplace-fields.yaml
 
   - include:
@@ -46,3 +49,6 @@ databaseChangeLog:
 
   - include:
       file: db/changelog/payment/002-remove-payments.yaml
+
+  - include:
+      file: db/changelog/payment/003-restore-payments.yaml
