@@ -1,0 +1,15 @@
+.git
+.github
+.gradle
+.idea
+.agents
+.aws
+.codex
+bin
+build
+out
+*.iml
+*.log
+.env
+.env.*
+!.env.example

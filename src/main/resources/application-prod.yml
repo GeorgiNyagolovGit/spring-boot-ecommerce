@@ -1,9 +1,16 @@
 spring:
   datasource:
-    url: jdbc:postgresql://${DB_HOST}:${DB_PORT:5432}/${DB_NAME}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    # DB_* is used by the existing Render setup; PG* is Railway's PostgreSQL naming.
+    url: jdbc:postgresql://${DB_HOST:${PGHOST}}:${DB_PORT:${PGPORT:5432}}/${DB_NAME:${PGDATABASE}}
+    username: ${DB_USERNAME:${PGUSER}}
+    password: ${DB_PASSWORD:${PGPASSWORD}}
     driver-class-name: org.postgresql.Driver
+
+server:
+  servlet:
+    session:
+      cookie:
+        secure: true
 
 jwt:
   secret: ${JWT_SECRET}

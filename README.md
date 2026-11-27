@@ -15,7 +15,7 @@ listings. There is no payment integration or card processing.
 - Owner-only write protection plus admin moderation endpoints
 - Shopping cart and order modules for arranging an order without online payment
 - PostgreSQL/H2 schema management with Liquibase
-- Swagger UI, health checks, Docker, AWS and Render deployment configuration
+- Swagger UI, health checks, Docker, Railway, AWS and Render deployment configuration
 
 ## Main API
 
@@ -59,11 +59,11 @@ them before starting the application.
 
 | Variable | Required | Default | Description |
 | --- | --- | --- | --- |
-| `DB_HOST` | Production | `localhost` | PostgreSQL host |
-| `DB_PORT` | No | `5432` | PostgreSQL port |
-| `DB_NAME` | Production | `javacommerce` | Database name |
-| `DB_USERNAME` | Production | `postgres` | Database user |
-| `DB_PASSWORD` | Production | — | Database password |
+| `DB_HOST` / `PGHOST` | Production | `localhost` | PostgreSQL host; Railway uses `PGHOST` |
+| `DB_PORT` / `PGPORT` | No | `5432` | PostgreSQL port; Railway uses `PGPORT` |
+| `DB_NAME` / `PGDATABASE` | Production | `javacommerce` | Database name; Railway uses `PGDATABASE` |
+| `DB_USERNAME` / `PGUSER` | Production | `postgres` | Database user; Railway uses `PGUSER` |
+| `DB_PASSWORD` / `PGPASSWORD` | Production | — | Database password; Railway uses `PGPASSWORD` |
 | `JWT_SECRET` | Production | — | JWT key with at least 32 bytes |
 | `JWT_EXPIRATION` | No | `86400000` | Token lifetime in milliseconds |
 | `GOOGLE_CLIENT_ID` | Google login | — | Google OAuth Web client ID |
@@ -161,6 +161,11 @@ The included `render.yaml` Blueprint creates an always-on Docker service and a
 paid PostgreSQL database, wires the database credentials automatically and
 runs with the `prod` profile. Follow [RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md)
 for the dashboard steps and the values that Render requests during creation.
+
+For Railway, the application accepts Railway's PostgreSQL variables directly,
+uses its injected `PORT`, and exposes `/actuator/health` for deployment checks.
+Follow [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md) for the exact service,
+database, variables, CORS and public-domain setup.
 
 For AWS, the project includes an Elastic Beanstalk configuration for a Docker
 environment backed by Amazon RDS PostgreSQL. Follow
